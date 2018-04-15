@@ -3,9 +3,15 @@ import argparse
 import email.utils
 import mailbox
 import sys
+import typing as T
 from getpass import getuser
 from pathlib import Path
 from socket import gethostname
+
+
+
+def resolve_path(path: T.Union[Path, str]) -> Path:
+    return Path(path).expanduser()
 
 
 class CustomHelpFormatter(argparse.HelpFormatter):
@@ -17,18 +23,21 @@ class CustomHelpFormatter(argparse.HelpFormatter):
         return ', '.join(action.option_strings) + '=' + args_string
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args() -> configargparse.Namespace:
     default_user = getuser() + '@' + gethostname()
 
-    parser = argparse.ArgumentParser(
+    parser = configargparse.ArgumentParser(
         prog='mdsm',
+        default_config_files=[
+            Path(xdg.XDG_CONFIG_HOME) / 'mdsm.conf'
+        ],
         formatter_class=(
             lambda prog: CustomHelpFormatter(prog, max_help_position=40)
         )
     )
 
     parser.add_argument(
-        '-m', '--maildir', metavar='PATH', type=Path, required=True,
+        '-m', '--maildir', metavar='PATH', type=resolve_path, required=True,
         help='path to the maildir where to put the e-mail in'
     )
     parser.add_argument('-s', '--subject', help='e-mail subject')
