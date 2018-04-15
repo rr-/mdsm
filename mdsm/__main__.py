@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import argparse
 import email.utils
 import mailbox
 import sys
@@ -8,14 +7,16 @@ from getpass import getuser
 from pathlib import Path
 from socket import gethostname
 
+import configargparse
+import xdg
 
 
 def resolve_path(path: T.Union[Path, str]) -> Path:
     return Path(path).expanduser()
 
 
-class CustomHelpFormatter(argparse.HelpFormatter):
-    def _format_action_invocation(self, action: argparse.Action) -> str:
+class CustomHelpFormatter(configargparse.HelpFormatter):
+    def _format_action_invocation(self, action: configargparse.Action) -> str:
         if not action.option_strings or action.nargs == 0:
             return super()._format_action_invocation(action)
         default = self._get_default_metavar_for_optional(action)
@@ -54,7 +55,7 @@ def parse_args() -> configargparse.Namespace:
     return parser.parse_args()
 
 
-def create_mail(args: argparse.Namespace) -> mailbox.mboxMessage:
+def create_mail(args: configargparse.Namespace) -> mailbox.mboxMessage:
     msg = mailbox.mboxMessage()
     msg['Date'] = email.utils.formatdate()
     msg['Subject'] = args.subject
@@ -64,7 +65,7 @@ def create_mail(args: argparse.Namespace) -> mailbox.mboxMessage:
     return msg
 
 
-def send_mail(args: argparse.Namespace) -> None:
+def send_mail(args: configargparse.Namespace) -> None:
     if not (args.maildir / 'cur').exists():
         raise FileNotFoundError(
             f'"{args.maildir}" does not appear to be a valid mail directory.'
