@@ -6,9 +6,10 @@ No postfix, no sendmail, no nothing, just regular filesystem operations.
 
 I made it because I wanted to receive e-mail alerts from local cronjobs and
 since I happen to use maildir+neomutt, rather than setting up a whole SMTP
-server, I only need to put a file into a proper destination.
+server, I only need to put a file with the e-mail into the proper destination
+in local file system.
 
-### Supported features
+### Features
 
 - Simple
 - Lets you control basic headers: sender, recipient and subject
