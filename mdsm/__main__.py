@@ -10,6 +10,8 @@ from socket import gethostname
 import configargparse
 import xdg
 
+DEFAULT_MAILDIRS = ['~/Maildir', '~/maildir', '~/mail']
+
 
 def resolve_path(path: T.Union[Path, str]) -> Path:
     return Path(path).expanduser()
@@ -27,6 +29,11 @@ class CustomHelpFormatter(configargparse.HelpFormatter):
 def parse_args() -> configargparse.Namespace:
     default_user = getuser() + '@' + gethostname()
 
+    default_maildir: T.Optional[Path] = None
+    for tmp_path in map(resolve_path, DEFAULT_MAILDIRS):
+        if (tmp_path / 'cur').exists():
+            default_maildir = tmp_path
+
     parser = configargparse.ArgumentParser(
         prog='mdsm',
         default_config_files=[
@@ -38,7 +45,8 @@ def parse_args() -> configargparse.Namespace:
     )
 
     parser.add_argument(
-        '-m', '--maildir', metavar='PATH', type=resolve_path, required=True,
+        '-m', '--maildir', metavar='PATH', type=resolve_path,
+        required=default_maildir is None, default=default_maildir,
         help='path to the maildir where to put the e-mail in'
     )
     parser.add_argument('-s', '--subject', help='e-mail subject')
