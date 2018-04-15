@@ -37,7 +37,7 @@ def parse_args() -> configargparse.Namespace:
     parser = configargparse.ArgumentParser(
         prog='mdsm',
         default_config_files=[
-            Path(xdg.XDG_CONFIG_HOME) / 'mdsm.conf'
+            str(Path(xdg.XDG_CONFIG_HOME) / 'mdsm.conf')
         ],
         formatter_class=(
             lambda prog: CustomHelpFormatter(prog, max_help_position=40)
